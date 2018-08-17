@@ -1,0 +1,46 @@
+{
+  "name": "test_plugin",
+  "context": "This is a test config for a plugin",
+  "enabled": true,
+  "package": "fix this",
+  "pid": "test_plugin_id",
+  "config_file": "test_plugin.json",
+  "config": {
+    "username": {
+      "context": "username",
+      "type": "string",
+      "default": "zpriddy",
+      "default_init": true,
+      "required": true
+    },
+    "password": {
+      "context": "password",
+      "type": "string",
+      "default": null,
+      "default_init": false,
+      "required": true
+    }
+  },
+  "actions": {
+    "test_action": {
+      "context": "This is a test action config",
+      "enabled": true,
+      "params": {
+        "input_1": {
+          "context": "this is input 1",
+          "type": "string",
+          "default": "default value",
+          "default_init": true,
+          "required": true
+        },
+        "input_2": {
+          "context": "this is input 2",
+          "type": "int",
+          "default": 777,
+          "default_init": true,
+          "required": false
+        }
+      }
+    }
+  }
+}
