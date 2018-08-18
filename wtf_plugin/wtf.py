@@ -15,15 +15,29 @@
 # limitations under the License.                                                #
 #                                                                               #
 ################################################################################# 
+import json
 import logging
 from os import walk
-from os.path import isdir, isfile
+from os.path import isdir, isfile, join
+
+from wtf_plugin_interface import WTFPluginInterface
+import importlib
+
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+        '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 
 class WTFPluginHandler(object):
     def __init__(self, config_path, plugins_folder):
         self._config_path = config_path
         self._plugins_folder = plugins_folder
+        self._plugin_interfaces = dict()
+        self._plugins = dict()
 
         if not check_if_folder_exists(self.config_path):
             logging.fatal('Config path %s does not exist.', self.config_path)
@@ -39,6 +53,37 @@ class WTFPluginHandler(object):
                 plugin_paths.append(path)
         return plugin_paths
 
+    def build_plugin_interface(self, plugin_path):
+        default_config_file = join(plugin_path, 'config.json')
+        if not isfile(default_config_file):
+            logging.fatal('plugin default config file not found.')
+        with open(default_config_file) as f:
+            default_config = json.load(f)
+            plugin_interface = WTFPluginInterface(default_config)
+            plugin_interface.read_user_config_file(self._config_path)
+            return plugin_interface
+
+    def build_all_plugin_interfaces(self):
+        plugin_paths = self.discover_plgins()
+        for path in plugin_paths:
+            interface = self.build_plugin_interface(path)
+            self._plugin_interfaces[interface.config.id] = interface
+
+    def install_plugin(self, plugin_interface):
+        """
+
+        Args:
+            plugin_interface (WTFPluginInterface):
+        """
+        logging.info('Installing plugin: %s', plugin_interface.config.id)
+        module = importlib.import_module(plugin_interface.config.package)
+        self._plugins[plugin_interface.config.id] = module.Setup(plugin_interface)
+
+    def install_all_plugins(self):
+        self.build_all_plugin_interfaces()
+        for pid, plugin_interface in self._plugin_interfaces.iteritems():
+            self.install_plugin(plugin_interface)
+
     @property
     def config_path(self):
         return self._config_path
@@ -46,6 +91,10 @@ class WTFPluginHandler(object):
     @property
     def plugins_folder(self):
         return self._plugins_folder
+
+    @property
+    def plugins(self):
+        return self._plugins
 
 
 def check_if_folder_exists(folder):

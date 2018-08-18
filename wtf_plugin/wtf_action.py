@@ -20,7 +20,7 @@ import logging
 from typing import Dict, Tuple
 
 from const import ACTION_CONTEXT, ACTION_ENABLED, ACTION_PARAMS
-from wtf_params import WTFParams, WTFParam
+from wtf_params import WTFParam, WTFParams
 
 
 class WTFActions(object):
@@ -42,6 +42,10 @@ class WTFActions(object):
     def import_actions(self):
         for action_name, action in self._actions_json.iteritems():  # type: Tuple[str, WTFActionConfig]
             self._actions[action_name] = WTFActionConfig(action_name, **action)
+
+    @property
+    def actions(self):
+        return self._actions
 
 
 class WTFActionConfig(object):
@@ -97,6 +101,14 @@ class WTFActionConfig(object):
 
     def export(self):
         return self.__dict__()
+
+    def export_for_action_import(self):
+        return {
+            'action_name': self.name,
+            'context':     self.context,
+            'enabled':     self.enabled,
+            'params':      self.params.export()
+        }
 
     @property
     def name(self):

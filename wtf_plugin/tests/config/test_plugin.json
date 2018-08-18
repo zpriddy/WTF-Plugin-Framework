@@ -1,5 +1,27 @@
 {
-  "enabled": true,
-  "username": "not zpriddy",
-  "password": "password123"
+    "actions": {
+        "test_action": {
+            "context": "This is a test action config", 
+            "enabled": true, 
+            "params": {
+                "input_1": {
+                    "context": "this is input 1", 
+                    "default": "default value 55", 
+                    "default_init": true, 
+                    "required": true, 
+                    "type": "string"
+                }, 
+                "input_2": {
+                    "context": "this is input 2", 
+                    "default": 888, 
+                    "default_init": true, 
+                    "required": false, 
+                    "type": "int"
+                }
+            }
+        }
+    }, 
+    "enabled": true, 
+    "password": "password123", 
+    "username": "not zpriddy"
 }

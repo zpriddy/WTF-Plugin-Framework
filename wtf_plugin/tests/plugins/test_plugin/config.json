@@ -2,8 +2,8 @@
   "name": "test_plugin",
   "context": "This is a test config for a plugin",
   "enabled": true,
-  "package": "fix this",
-  "pid": "test_plugin_id",
+  "package": "plugins.test_plugin.test_plugin",
+  "pid": "test_plugin",
   "config_file": "test_plugin.json",
   "config": {
     "username": {
