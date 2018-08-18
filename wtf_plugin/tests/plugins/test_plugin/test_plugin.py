@@ -39,6 +39,11 @@ class TestPlugin(Plugin):
         super(TestPlugin, self).__init__(plugin_interface, **kwargs)
 
         self.add_action('test_action', self.my_test_action)
+        self.add_request('echo', self.my_echo_function)
 
     def my_test_action(self, input_1, input_2, **kwargs):
         print("Hello World! I am %s and %s years old" % (input_1, input_2))
+
+    def my_echo_function(self, echo_input):
+        print('Echoing: %s' % echo_input)
+        return echo_input

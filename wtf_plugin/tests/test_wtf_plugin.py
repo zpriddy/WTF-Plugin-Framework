@@ -1,8 +1,10 @@
 import unittest
+
 from wtf_plugin.wtf import WTFPluginHandler
 
 TEST_PLUGIN_PATH = 'plugins'
 TEST_CONFIG_PATH = 'config'
+
 
 class MyTestCase(unittest.TestCase):
     def test_handler_1(self):
@@ -27,6 +29,14 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(h.plugins['test_plugin'].actions.test_action.enabled)
         h.plugins['test_plugin'].actions.test_action.call()
         h.plugins['test_plugin'].actions.test_action.call(input_2='zpriddy')
+
+    def test_handler_5(self):
+        h = WTFPluginHandler(TEST_CONFIG_PATH, TEST_PLUGIN_PATH)
+        h.install_all_plugins()
+        self.assertTrue(h.plugins['test_plugin'].requests.echo.enabled)
+        h.plugins['test_plugin'].requests.echo.call()
+        self.assertEqual(h.plugins['test_plugin'].requests.echo.call(echo_input='zpriddy'), 'zpriddy')
+
 
 if __name__ == '__main__':
     unittest.main()

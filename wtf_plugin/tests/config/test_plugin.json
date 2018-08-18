@@ -23,5 +23,20 @@
     }, 
     "enabled": true, 
     "password": "password123", 
+    "requests": {
+        "echo": {
+            "context": "This is a test request that should return the provided param", 
+            "enabled": true, 
+            "params": {
+                "echo_input": {
+                    "context": "This is what will be echoed back by the request", 
+                    "default": "You did not provide an input", 
+                    "default_init": true, 
+                    "required": true, 
+                    "type": "string"
+                }
+            }
+        }
+    }, 
     "username": "not zpriddy"
 }

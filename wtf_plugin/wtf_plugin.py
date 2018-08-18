@@ -17,13 +17,12 @@
 ################################################################################# 
 import logging
 
-from wtf_plugin_interface import WTFPluginInterface, WTFPluginConfigInterface
+from wtf_plugin_interface import WTFPluginConfigInterface, WTFPluginInterface
 
 
 class Plugin(object):
     def __init__(self, plugin_interface, **kwargs):
         self._plugin_interface = plugin_interface  # type: WTFPluginInterface
-
         self._request_map = dict()
         self._action_map = dict()
         self._self_checks_map = dict()
@@ -32,6 +31,7 @@ class Plugin(object):
 
     def add_request(self, request_name, request_function):
         logging.debug('[PLUGIN] adding request: %s to plugin: %s', request_name, self.id)
+        self.requests.set_action_function(request_name, request_function)
         self.request_map[request_name] = request_function
 
     def add_action(self, action_name, action_function):
@@ -53,6 +53,10 @@ class Plugin(object):
     @property
     def actions(self):
         return self._plugin_interface.actions
+
+    @property
+    def requests(self):
+        return self._plugin_interface.requests
 
     @property
     def id(self):

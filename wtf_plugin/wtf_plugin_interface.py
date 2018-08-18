@@ -30,11 +30,14 @@ class WTFPluginInterface(object):
     def __init__(self, plugin_config):
         self._plugin_config = WTFPluginConfigInterface(**plugin_config)
         self._plugin_actions = WTFActionsInterface(self.config.actions)
+        self._plugin_requests = WTFActionsInterface(self.config.requests)
+
 
 
     def read_user_config_file(self, config_folder='config'):
         self.config.read_user_config_file(config_folder)
         self._plugin_actions = WTFActionsInterface(self.config.actions)
+        self._plugin_requests = WTFActionsInterface(self.config.requests)
 
     @property
     def config(self):
@@ -43,6 +46,10 @@ class WTFPluginInterface(object):
     @property
     def actions(self):
         return self._plugin_actions
+
+    @property
+    def requests(self):
+        return self._plugin_requests
 
 
 class WTFActionsInterface(object):
@@ -118,7 +125,7 @@ class WTFActionInterface(WTFActionConfig):
             logging.fatal('action: %s is not enabled', self.name)
             return
         params = self.verify_params(**kwargs)
-        self.function(**params)
+        return self.function(**params)
 
     @property
     def function(self):
@@ -126,7 +133,7 @@ class WTFActionInterface(WTFActionConfig):
 
 
 class WTFPluginConfigInterface(object):
-    def __init__(self, pid, context, package, config_file, enabled=False, config={}, actions={}, **kwargs):
+    def __init__(self, pid, context, package, config_file, enabled=False, config={}, actions={}, requests={}, **kwargs):
         """
 
         Args:
@@ -146,6 +153,8 @@ class WTFPluginConfigInterface(object):
         self._enabled = enabled
         self._actions = WTFActions(actions)
         self._actions_json = actions
+        self._requests = WTFActions(requests)
+        self._requests_json = requests
 
         for config_name, config_param in self._config.params.iteritems():  # type: Tuple[str, WTFParam]
             setattr(self, '__' + config_name, WTFParamInterface(config_param))
@@ -163,14 +172,16 @@ class WTFPluginConfigInterface(object):
         with open(join(config_folder, self._config_file)) as user_config:
             user_json = json.load(user_config)
             for param_name, param_vaue in user_json.iteritems():
-                if param_name not in ['enabled', 'actions']:
+                if param_name not in ['enabled', 'actions', 'requests']:
                     self.set_value(param_name, param_vaue)
                 if param_name == 'enabled':
                     self._enabled = param_vaue
                 if param_name == 'actions':
                     self._actions_json = param_vaue
-                    print(self._actions_json)
                     self._actions = WTFActions(self._actions_json)
+                if param_name == 'requests':
+                    self._requests_json = param_vaue
+                    self._requests = WTFActions(self._requests_json)
 
     def save_user_config_file(self, config_folder='config'):
         with open(join(config_folder, self._config_file), 'w') as user_config:
@@ -179,6 +190,7 @@ class WTFPluginConfigInterface(object):
                 if key.startswith('__'):
                     config_output[key[2:]] = value.value
             config_output['actions'] = self.actions.export()
+            config_output['requests'] = self.requests.export()
             config_output['enabled'] = self.enabled
             print(config_output)
             json.dump(config_output,user_config, indent=4,sort_keys=True)
@@ -203,6 +215,10 @@ class WTFPluginConfigInterface(object):
     @property
     def actions(self):
         return self._actions
+
+    @property
+    def requests(self):
+        return self._requests
 
 
 class WTFParamInterface(object):

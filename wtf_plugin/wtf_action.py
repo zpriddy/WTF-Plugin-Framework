@@ -75,7 +75,7 @@ class WTFActionConfig(object):
         Args:
             param (WTFParam): param to add
         """
-        self._params[param.param_key] = param
+        self._params.params[param.param_key] = param
 
     def add_json_param(self, json_param):
         """ Add a param to the action params from JSON format.
@@ -88,7 +88,7 @@ class WTFActionConfig(object):
             return
 
         param = WTFParam(json_param.keys()[0])
-        self._params[param.param_key] = param
+        self._params.params[param.param_key] = param
 
     def __dict__(self):
         return {

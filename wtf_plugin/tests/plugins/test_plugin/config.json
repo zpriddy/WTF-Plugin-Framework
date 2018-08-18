@@ -42,5 +42,20 @@
         }
       }
     }
+  },
+  "requests": {
+    "echo": {
+      "context": "This is a test request that should return the provided param",
+      "enabled": true,
+      "params": {
+        "echo_input": {
+          "context": "This is what will be echoed back by the request",
+          "type": "string",
+          "default": "You did not provide an input",
+          "default_init": true,
+          "required": true
+        }
+      }
+    }
   }
 }
