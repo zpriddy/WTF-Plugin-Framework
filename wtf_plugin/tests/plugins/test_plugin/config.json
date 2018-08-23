@@ -23,6 +23,7 @@
   },
   "actions": {
     "test_action": {
+      "confidence": 5,
       "context": "This is a test action config",
       "enabled": true,
       "params": {
@@ -47,6 +48,7 @@
     "echo": {
       "context": "This is a test request that should return the provided param",
       "enabled": true,
+      "confidence": 5,
       "params": {
         "echo_input": {
           "context": "This is what will be echoed back by the request",

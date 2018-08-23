@@ -17,6 +17,8 @@
 ################################################################################# 
 from wtf_plugin.wtf_plugin import Plugin
 from wtf_plugin.wtf_plugin_interface import WTFPluginInterface
+from wtf_plugin.wtf_request import WTFRequest
+from wtf_plugin.wtf_response import WTFResponse
 
 
 def Setup(plugin_interface, **kwargs):
@@ -41,9 +43,15 @@ class TestPlugin(Plugin):
         self.add_action('test_action', self.my_test_action)
         self.add_request('echo', self.my_echo_function)
 
-    def my_test_action(self, input_1, input_2, **kwargs):
-        print("Hello World! I am %s and %s years old" % (input_1, input_2))
+    def my_test_action(self, request, **kwargs):
+        """
 
-    def my_echo_function(self, echo_input):
-        print('Echoing: %s' % echo_input)
-        return echo_input
+        Args:
+            request (WTFRequest):
+        """
+        print("Hello World! I am %s and %s years old" % (request.input_1, request.input_2))
+        return self.build_action_response(True)
+
+    def my_echo_function(self, request, **kwargs):
+        print('Echoing: %s' % request.echo_input)
+        return self.build_request_response(request.echo_input)

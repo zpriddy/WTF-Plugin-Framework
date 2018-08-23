@@ -1,6 +1,7 @@
 {
     "actions": {
         "test_action": {
+            "confidence": 5, 
             "context": "This is a test action config", 
             "enabled": true, 
             "params": {
@@ -25,6 +26,7 @@
     "password": "password123", 
     "requests": {
         "echo": {
+            "confidence": 5, 
             "context": "This is a test request that should return the provided param", 
             "enabled": true, 
             "params": {

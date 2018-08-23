@@ -1,4 +1,4 @@
-################################################################################# 
+#################################################################################
 #                                                                               #
 # Copyright 2018/08/16 Zachary Priddy (me@zpriddy.com) https://zpriddy.com      #
 #                                                                               #
@@ -14,16 +14,41 @@
 # See the License for the specific language governing permissions and           #
 # limitations under the License.                                                #
 #                                                                               #
-################################################################################# 
+#################################################################################
 
 
-PARAM_CONTEXT = 'context'
-PARAM_TYPE = 'type'
-PARAM_DEFAULT = 'default'
-PARAM_DEFAULT_INIT = 'default_init'
-PARAM_REQUIRED = 'required'
+class WTFResponse(object):
+    def __init__(self, pid, result, confidence, errors=[], notes=[], function_name='unknown', success=None, **kwargs):
+        self._pid = pid
+        self._result = result
+        self._confidence = confidence
+        self._errors = errors
+        self._notes = notes
+        self._function = function_name
+        self._success = success
 
-ACTION_CONTEXT = 'context'
-ACTION_PARAMS = 'params'
-ACTION_ENABLED = 'enabled'
-ACTION_CONFIDENCE = 'confidence'
+    def add_error(self, error_message):
+        self._errors.append(error_message)
+
+    def add_note(self, note):
+        self._notes.append(note)
+
+    @property
+    def response(self):
+        return {
+            'result':     self._result,
+            'confidence': self._confidence,
+            'errors':     self._errors,
+            'notes':      self._notes,
+            'pid':        self._pid,
+            'function':   self._function,
+            'success':    self._success
+        }
+
+    @property
+    def value(self):
+        return self._result
+
+    @property
+    def success(self):
+        return self._success

@@ -18,6 +18,10 @@
 import logging
 
 from wtf_plugin_interface import WTFPluginConfigInterface, WTFPluginInterface
+from wtf_request import WTFRequest
+from wtf_response import WTFResponse
+
+from time import sleep
 
 
 class Plugin(object):
@@ -26,6 +30,10 @@ class Plugin(object):
         self._request_map = dict()
         self._action_map = dict()
         self._self_checks_map = dict()
+        self._current_request = None
+        self._request_lock = False
+        self._current_action = None
+        self._action_lock = False
 
         self.config.save_user_config_file()
 
@@ -38,6 +46,62 @@ class Plugin(object):
         logging.debug('[PLUGIN] adding action: %s to plugin: %s', action_name, self.id)
         self.actions.set_action_function(action_name, action_function)
         self.action_map[action_name] = action_function
+
+    def has_request(self, request_name):
+        return request_name in self.request_map.keys()
+
+    def has_action(self, action_name):
+        return action_name in self.action_map.keys()
+
+    def call_request(self, request, **kwargs):
+        """
+
+        Args:
+            request (WTFRequest):
+        """
+        while self._request_lock:
+            sleep(1)
+        self._request_lock = True
+        self._current_request = request.request_name
+
+        if request.request_name in self.requests.actions.keys():
+            response = self.request_map[request.request_name](request)
+        else:
+            response = WTFResponse(self.id, None, 0, ['request name not found'])
+
+        self._current_request = None
+        self._request_lock = False
+
+        return response
+
+    def build_request_response(self, result, success=True, errors=[], notes=[]):
+        return WTFResponse(self.id, result, self.config.requests.actions[self._current_request].confidence, errors,
+                           notes, self._current_request, success)
+
+    def call_action(self, action, **kwargs):
+        """
+
+        Args:
+            action (WTFRequest):
+        """
+        while self._action_lock:
+            sleep(1)
+        self._action_lock = True
+        self._current_action = action.request_name
+
+        if action.request_name in self.actions.actions.keys():
+            response = self.action_map[action.request_name](action)
+        else:
+            response = WTFResponse(self.id, None, 0, ['action name not found'])
+
+        self._current_action = None
+        self._action_lock = False
+
+        return response
+
+    def build_action_response(self, success, result=None, errors=[], notes=[]):
+        return WTFResponse(self.id, result, self.config.actions.actions[self._current_action].confidence, errors,
+                           notes, self._current_action, success)
 
     # TODO(zpriddy): add function for adding self checks
 

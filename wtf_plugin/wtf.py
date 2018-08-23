@@ -21,12 +21,16 @@ from os import walk
 from os.path import isdir, isfile, join
 
 from wtf_plugin_interface import WTFPluginInterface
+from wtf_plugin import Plugin
+from wtf_request import WTFRequest
 import importlib
+
+from typing import Dict
 
 logger = logging.getLogger()
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
-        '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+    '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
@@ -37,7 +41,7 @@ class WTFPluginHandler(object):
         self._config_path = config_path
         self._plugins_folder = plugins_folder
         self._plugin_interfaces = dict()
-        self._plugins = dict()
+        self._plugins = dict()  # type: Dict[str, Plugin]
 
         if not check_if_folder_exists(self.config_path):
             logging.fatal('Config path %s does not exist.', self.config_path)
@@ -83,6 +87,75 @@ class WTFPluginHandler(object):
         self.build_all_plugin_interfaces()
         for pid, plugin_interface in self._plugin_interfaces.iteritems():
             self.install_plugin(plugin_interface)
+
+    def get_plugins_by_request(self, request, **kwargs):
+        """ Will return list of plugins that support that request. If PID is supplied in the request only that plugin
+        will be returned.
+
+        Args:
+            request (WTFRequest): Request to find plugins by
+            **kwargs:
+
+        Returns:
+
+        """
+        plugins = list()
+        for plugin_name, plugin in self.plugins.iteritems():
+            if request.pid and not plugin.id == request.pid:
+                continue
+            if plugin.has_request(request.request_name):
+                plugins.append(plugin_name)
+        return plugins
+
+    def get_plugins_by_action(self, action, **kwargs):
+        """ Will return list of plugins that support that action. If PID is supplied in the request only that plugin
+        will be returned.
+
+        Args:
+            action (WTFRequest): Action to find plugins by
+            **kwargs:
+
+        Returns:
+
+        """
+
+        plugins = list()
+        for plugin_name, plugin in self.plugins.iteritems():
+            if action.pid and not plugin.id == action.pid:
+                continue
+            if plugin.has_action(action.request_name):
+                plugins.append(plugin_name)
+        return plugins
+
+    def send_request(self, request, **kwargs):
+        """
+
+        Args:
+            request (WTFRequest): request to be sent
+        """
+        results = dict()
+        p = self.get_plugins_by_request(request)
+        for plugin_name in p:
+            results[plugin_name] = self.send_single_request(request, plugin_name, **kwargs)
+        return results
+
+    def send_single_request(self, request, pid, **kwargs):
+        return self.plugins[pid].call_request(request)
+
+    def send_action(self, action, **kwargs):
+        """
+
+        Args:
+            action (WTFRequest): action to be sent
+        """
+        results = dict()
+        p = self.get_plugins_by_action(action)
+        for plugin_name in p:
+            results[plugin_name] = self.send_single_action(action, plugin_name, **kwargs)
+        return results
+
+    def send_single_action(self, action, pid, **kwargs):
+        return self.plugins[pid].call_action(action)
 
     @property
     def config_path(self):

@@ -1,4 +1,4 @@
-################################################################################# 
+#################################################################################
 #                                                                               #
 # Copyright 2018/08/16 Zachary Priddy (me@zpriddy.com) https://zpriddy.com      #
 #                                                                               #
@@ -14,16 +14,29 @@
 # See the License for the specific language governing permissions and           #
 # limitations under the License.                                                #
 #                                                                               #
-################################################################################# 
+#################################################################################
 
 
-PARAM_CONTEXT = 'context'
-PARAM_TYPE = 'type'
-PARAM_DEFAULT = 'default'
-PARAM_DEFAULT_INIT = 'default_init'
-PARAM_REQUIRED = 'required'
+class WTFRequest(object):
+    def __init__(self, request_name, pid=None, **kwargs):
+        self._request_name = request_name
+        self._pid = pid
+        self._kwargs = kwargs
 
-ACTION_CONTEXT = 'context'
-ACTION_PARAMS = 'params'
-ACTION_ENABLED = 'enabled'
-ACTION_CONFIDENCE = 'confidence'
+        self.set_kwargs()
+
+    def set_kwargs(self):
+        for name, value in self._kwargs.iteritems():
+            setattr(self, name, value)
+
+    @property
+    def request_name(self):
+        return self._request_name
+
+    @property
+    def pid(self):
+        return self._pid
+
+    @property
+    def kwargs(self):
+        return self._kwargs

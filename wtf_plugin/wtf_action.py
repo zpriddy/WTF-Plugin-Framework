@@ -19,7 +19,7 @@ import logging
 
 from typing import Dict, Tuple
 
-from const import ACTION_CONTEXT, ACTION_ENABLED, ACTION_PARAMS
+from const import ACTION_CONTEXT, ACTION_ENABLED, ACTION_PARAMS, ACTION_CONFIDENCE
 from wtf_params import WTFParam, WTFParams
 
 
@@ -49,7 +49,7 @@ class WTFActions(object):
 
 
 class WTFActionConfig(object):
-    def __init__(self, action_name, context, enabled=True, params=None, **kwargs):
+    def __init__(self, action_name, context, confidence=5, enabled=True, params=None, **kwargs):
         """
         Args:
             action_name: (string) The name of the action
@@ -60,6 +60,7 @@ class WTFActionConfig(object):
         """
         self._action_name = action_name
         self._context = context
+        self._confidence = confidence
         self._enabled = enabled  # type: bool
         self._json_params = params  # type: dict
         self._params = None  # type: WTFParams
@@ -93,9 +94,10 @@ class WTFActionConfig(object):
     def __dict__(self):
         return {
             self.name: {
-                ACTION_CONTEXT: self.context,
-                ACTION_ENABLED: self.enabled,
-                ACTION_PARAMS:  self.params.export()
+                ACTION_CONTEXT:    self.context,
+                ACTION_ENABLED:    self.enabled,
+                ACTION_CONFIDENCE: self.confidence,
+                ACTION_PARAMS:     self.params.export()
             }
         }
 
@@ -107,6 +109,7 @@ class WTFActionConfig(object):
             'action_name': self.name,
             'context':     self.context,
             'enabled':     self.enabled,
+            'confidence':  self.confidence,
             'params':      self.params.export()
         }
 
@@ -129,3 +132,7 @@ class WTFActionConfig(object):
     @property
     def params(self):
         return self._params
+
+    @property
+    def confidence(self):
+        return self._confidence

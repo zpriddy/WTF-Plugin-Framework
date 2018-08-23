@@ -16,12 +16,13 @@
 #                                                                               #
 ################################################################################# 
 import json
-from os.path import join
+from os.path import join, isfile
 
 from typing import Any, Tuple
 
 from wtf_action import WTFActions, WTFActionConfig
 from wtf_params import WTFParams, WTFParam
+from wtf_request import WTFRequest
 
 import logging
 
@@ -95,7 +96,6 @@ class WTFActionInterface(WTFActionConfig):
         Args:
             action (WTFActionConfig):
         """
-        print(action.export())
         super(WTFActionInterface, self).__init__(**action.export_for_action_import())
         self._function = None
 
@@ -120,12 +120,12 @@ class WTFActionInterface(WTFActionConfig):
         default_params.update(**kwargs)
         return default_params
 
-    def call(self, **kwargs):
+    def call(self, request, **kwargs):
         if not self.enabled:
             logging.fatal('action: %s is not enabled', self.name)
             return
-        params = self.verify_params(**kwargs)
-        return self.function(**params)
+        params = self.verify_params(**request.kwargs)
+        return self.function(WTFRequest(request.request_name, **params))
 
     @property
     def function(self):
@@ -169,6 +169,9 @@ class WTFPluginConfigInterface(object):
         return self.__dict__['__' + item]
 
     def read_user_config_file(self, config_folder='config'):
+        if not isfile(join(config_folder, self._config_file)):
+            with open(join(config_folder, self._config_file), 'w') as new_file:
+                new_file.write('{}')
         with open(join(config_folder, self._config_file)) as user_config:
             user_json = json.load(user_config)
             for param_name, param_vaue in user_json.iteritems():
@@ -192,7 +195,6 @@ class WTFPluginConfigInterface(object):
             config_output['actions'] = self.actions.export()
             config_output['requests'] = self.requests.export()
             config_output['enabled'] = self.enabled
-            print(config_output)
             json.dump(config_output,user_config, indent=4,sort_keys=True)
 
 
