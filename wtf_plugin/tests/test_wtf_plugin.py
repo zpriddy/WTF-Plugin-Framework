@@ -1,7 +1,7 @@
 import unittest
 
 from wtf_plugin.wtf import WTFPluginHandler
-from wtf_plugin.wtf_request import WTFRequest
+from wtf_plugin.wtf_request import WTFRequest, WTFAction
 from wtf_plugin.wtf_response import WTFResponse
 
 TEST_PLUGIN_PATH = 'plugins'
@@ -38,10 +38,10 @@ class MyTestCase(unittest.TestCase):
         h = WTFPluginHandler(TEST_CONFIG_PATH, TEST_PLUGIN_PATH)
         h.install_all_plugins()
         self.assertTrue(h.plugins['test_plugin'].actions.test_action.enabled)
-        action_result = h.send_action(WTFRequest('test_action', 'test_plugin', input_1=5, input_2='zpriddy'))
+        action_result = h.send_action(WTFAction('test_action', 'test_plugin', input_1=5, input_2='zpriddy'))
         # h.plugins['test_plugin'].actions.test_action.call(WTFRequest('test_action'))
         # h.plugins['test_plugin'].actions.test_action.call(WTFRequest('test_action', input_2='zpriddy'))
-        print action_result
+        self.assertTrue(action_result['test_plugin'].success)
 
     # Disabled due to incorrect way of calling function
     # TODO: Disable this way of calling functions
@@ -63,9 +63,6 @@ class MyTestCase(unittest.TestCase):
         h = WTFPluginHandler(TEST_CONFIG_PATH, TEST_PLUGIN_PATH)
         h.install_all_plugins()
         p = h.send_request(WTFRequest('echo', echo_input='zpriddy'))
-        print p
-        print p['test_plugin'].response
-        print p['test_plugin'].value
         self.assertEqual(WTFResponse('test_plugin', 'zpriddy', 5, function_name='echo', success=True).response,
                          p['test_plugin'].response)
 
