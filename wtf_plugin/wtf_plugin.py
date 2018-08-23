@@ -18,7 +18,7 @@
 import logging
 
 from wtf_plugin_interface import WTFPluginConfigInterface, WTFPluginInterface
-from wtf_request import WTFRequest
+from wtf_request import WTFRequest, WTFAction
 from wtf_response import WTFResponse
 
 from time import sleep
@@ -82,7 +82,7 @@ class Plugin(object):
         """
 
         Args:
-            action (WTFRequest):
+            action (WTFAction):
         """
         while self._action_lock:
             sleep(1)

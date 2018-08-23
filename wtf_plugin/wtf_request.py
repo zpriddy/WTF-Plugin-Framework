@@ -40,3 +40,8 @@ class WTFRequest(object):
     @property
     def kwargs(self):
         return self._kwargs
+
+
+class WTFAction(WTFRequest):
+    def __init__(self, action_name, pid=None, **kwargs):
+        super(WTFAction, self).__init__(action_name, pid, **kwargs)

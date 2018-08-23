@@ -22,7 +22,7 @@ from os.path import isdir, isfile, join
 
 from wtf_plugin_interface import WTFPluginInterface
 from wtf_plugin import Plugin
-from wtf_request import WTFRequest
+from wtf_request import WTFRequest, WTFAction
 import importlib
 
 from typing import Dict
@@ -112,7 +112,7 @@ class WTFPluginHandler(object):
         will be returned.
 
         Args:
-            action (WTFRequest): Action to find plugins by
+            action (WTFAction): Action to find plugins by
             **kwargs:
 
         Returns:
@@ -146,7 +146,7 @@ class WTFPluginHandler(object):
         """
 
         Args:
-            action (WTFRequest): action to be sent
+            action (WTFAction): action to be sent
         """
         results = dict()
         p = self.get_plugins_by_action(action)
