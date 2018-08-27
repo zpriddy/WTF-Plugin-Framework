@@ -46,6 +46,10 @@ class WTFResponse(object):
         }
 
     @property
+    def errors(self):
+        return self._errors
+
+    @property
     def value(self):
         return self._result
 
