@@ -18,7 +18,8 @@
 
 
 class WTFResponse(object):
-    def __init__(self, pid, result, confidence, errors=[], notes=[], function_name='unknown', success=None, **kwargs):
+    def __init__(self, pid, result, confidence, errors=[], notes=[], function_name='unknown', success=None, data={},
+                 **kwargs):
         self._pid = pid
         self._result = result
         self._confidence = confidence
@@ -26,6 +27,7 @@ class WTFResponse(object):
         self._notes = notes
         self._function = function_name
         self._success = success
+        self._data = data
 
     def add_error(self, error_message):
         self._errors.append(error_message)
@@ -42,7 +44,8 @@ class WTFResponse(object):
             'notes':      self._notes,
             'pid':        self._pid,
             'function':   self._function,
-            'success':    self._success
+            'success':    self._success,
+            'data':       self._data
         }
 
     @property

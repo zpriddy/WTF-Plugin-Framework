@@ -74,9 +74,9 @@ class Plugin(object):
 
         return response
 
-    def build_request_response(self, result, success=True, errors=[], notes=[]):
+    def build_request_response(self, result, success=True, errors=[], notes=[], data={}):
         return WTFResponse(self.id, result, self.config.requests.actions[self._current_request].confidence, errors,
-                           notes, self._current_request, success)
+                           notes, self._current_request, success, data)
 
     def call_action(self, action, **kwargs):
         """
@@ -99,9 +99,9 @@ class Plugin(object):
 
         return response
 
-    def build_action_response(self, success, result=None, errors=[], notes=[]):
+    def build_action_response(self, success, result=None, errors=[], notes=[], data={}):
         return WTFResponse(self.id, result, self.config.actions.actions[self._current_action].confidence, errors,
-                           notes, self._current_action, success)
+                           notes, self._current_action, success, data)
 
     # TODO(zpriddy): add function for adding self checks
 
